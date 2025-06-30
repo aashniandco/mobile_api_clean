@@ -1,0 +1,1182 @@
+<?xml version="1.0"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi/etc/webapi.xsd">
+    <route url="/V1/solr/products" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getSolrData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+  
+    <!--
+      ROUTE 2: Dedicated, lightweight endpoint for getting ONLY filter data.
+      Used to quickly populate the "Show Filter" menu on a mobile app.
+      Example: GET /rest/V1/solr/category/1374/filters
+    -->
+    <route url="/V1/solr/category/:categoryId/filters" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getFilters"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+  <route url="/V1/solr/category/:categoryId/products" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getProductsAndFilters"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+  <!-- ✅ ADD THIS NEW ROUTE -->
+    <route url="/V1/aashni/subcategories/:parentCategoryName" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getActiveSubCategoriesByName"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    
+
+        <!-- ✅ ADD THIS NEW ROUTE FOR CHILD CATEGORIES -->
+    <route url="/V1/solr/child-categories/:parentCategoryName" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getChildCategories"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+     <!-- Route to Fetch Data for a NewInAccessories -->
+   <route url="/V1/solr/designers" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getDesigners"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <route url="/V1/solr/homepage-content" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getHomepageCmsContent"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+  <route url="/V1/solr/category-by-url-key/:urlKey" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getCategoryByUrlKey"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    
+
+      <route url="/V1/solr/megamenu" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getMegamenuItems"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+
+       <!-- ✅ START: ADD THIS NEW ROUTE DEFINITION -->
+    <!-- This route will be for logged-in customers to set the shipping price for their own cart -->
+    <route url="/V1/aashni/carts/mine/set-shipping-price" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="setShippingPrice"/>
+        <resources>
+            <resource ref="self"/> <!-- 'self' resource means only the logged-in customer can use this -->
+        </resources>
+        <data>
+            <!-- Define the parameters the API expects -->
+            <parameter type="float" name="shippingPrice" force="true"/>
+        </data>
+    </route>
+    <!-- ✅ END: ADD THIS NEW ROUTE DEFINITION -->
+
+
+<!-- ✅ START: THIS IS THE CORRECT AND COMPLETE ROUTE DEFINITION -->
+<route url="/V1/aashni/place-order" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="placeOrderForCustomer"/>
+    <resources>
+        <resource ref="self"/>
+    </resources>
+    <data>
+        <parameter type="string" name="paymentMethodCode"/>
+        <parameter type="mixed" name="billingAddress"/>
+        
+        <!-- ✅ THIS LINE MUST BE ADDED -->
+        <parameter type="string" name="paymentMethodNonce"/>
+
+    </data>
+</route>
+<!-- ✅ END: THIS IS THE CORRECT AND COMPLETE ROUTE DEFINITION -->
+
+
+ <!-- ✅ ADD THIS NEW ROUTE DEFINITION -->
+    <route url="/V1/aashni/order-details/:orderId" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getOrderDetails"/>
+        <resources>
+            <!-- 'self' resource requires a customer token for authentication -->
+            <resource ref="self"/>
+        </resources>
+    </route>
+    <!-- ✅ END OF NEW ROUTE -->
+
+  <!-- Cart total weight-->
+<route url="/V1/cart/details/:customerId" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getCartDetailsByCustomerId"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+  <!-- Delete item from cart -->
+   <route url="/V1/solr/cart/item/delete" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="deleteCartItem"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+  <!-- Country code -->
+<route url="/V1/solr/country-codes" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getAllCountryCodes"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+ <!-- Shipping Rate by Country and Region -->
+    <route url="/V1/aashni/shipping-rate/:countryId/:regionId" method="GET"> <!-- Changed URL structure for clarity -->
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getShippingRate"/>
+        <resources>
+            <resource ref="anonymous"/> <!-- Or 'self' if it requires customer authentication -->
+        </resources>
+    </route>
+
+
+<route url="/V1/solr/cart/item/updateQty" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="updateCartItemQty"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+<!-- Custom Shipping Rate API -->
+<route url="/V1/solr/shipping-rate" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getShippingRate"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+   <!-- Route to Fetch Data for a Specific Designer -->
+    <route url="/V1/solr/designer" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getDesignerData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+        <parameters>
+            <parameter name="designer_name" type="string" in="query" required="true"/>
+        </parameters>
+    </route>
+
+<!-- Route to POST dynamic Solr Search -->
+<!-- <route url="/V1/solr/search" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="searchSolrData"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+    <data>
+        <parameter name="payload" force="true" type="array" />
+    </data>
+</route> -->
+
+
+<route url="/V1/solr/search" method="POST">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getSolrSearch"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+
+    <!-- ✅ New Route for Gender -->
+    <route url="/V1/solr/gender" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getGenderData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+        <parameters>
+            <parameter name="gender_name" type="string" in="query" required="true"/>
+        </parameters>
+    </route>
+
+
+  <!-- Route to Fetch Data for a NewInWomensclothe -->
+   <route url="/V1/solr/newin" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+    
+
+      <!-- Route to Fetch Data for a NewInAccessories -->
+   <route url="/V1/solr/new-in-accessories" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories lehengas -->
+   <route url="/V1/solr/lehengas" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Lehengas"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Kurta sets -->
+   <route url="/V1/solr/sarees" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Sarees"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+       <!-- Route to Fetch Data for a NewIn Subcatgegories Tops -->
+   <route url="/V1/solr/tops" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Tops"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+     <!-- Route to Fetch Data for a NewIn Subcatgegories Kaftans -->
+   <route url="/V1/solr/kaftans" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Kaftans"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+     <!-- Route to Fetch Data for a NewIn Subcatgegories Gowns -->
+   <route url="/V1/solr/gowns" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Gowns"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+      <!-- Route to Fetch Data for a NewIn Subcatgegories Pants -->
+   <route url="/V1/solr/pants" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Pants"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+      <!-- Route to Fetch Data for a NewIn Subcatgegories Tunic&Kurtis -->
+   <route url="/V1/solr/tunicskurtis" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_TunicsKurtis"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+<!-- Route to Fetch Data for a NewIn Subcatgegories Capes -->
+       <route url="/V1/solr/capes" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Capes"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Jumpsuits -->
+       <route url="/V1/solr/jumpsuits" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Jumpsuits"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+        <!-- Route to Fetch Data for a NewIn Subcatgegories Kurtas -->
+       <route url="/V1/solr/kurtas" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Kurtas"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Skirts -->
+       <route url="/V1/solr/skirts" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Skirts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Palazzo Sets -->
+       <route url="/V1/solr/palazzosets" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_PalazzoSets"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Beach -->
+       <route url="/V1/solr/beach" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInWomenclothing_Beach"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+<!-- ///////////*Accessories*///////// -->
+
+
+    <!-- Route to Fetch Data for a NewIn Subcatgegories Bags -->
+       <route url="/V1/solr/bags" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories_Bags"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+     <!-- Route to Fetch Data for a NewIn Subcatgegories Shoes -->
+       <route url="/V1/solr/shoes" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories_Shoes"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+     <!-- Route to Fetch Data for a NewIn Subcatgegories Belts -->
+       <route url="/V1/solr/belts" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories_Belts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+      <!-- Route to Fetch Data for a NewIn Subcatgegories Masks Test -->
+       <route url="/V1/solr/masks" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories_Masks"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+    <!-- ///////////*Men*///////// -->
+
+ <!-- Route to Fetch Data for a NewIn Men -->
+       <route url="/V1/solr/kurtasets" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_KurtaSets"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+     <!-- Route to Fetch Data for a NewIn Men Sherwanis -->
+       <route url="/V1/solr/sherwanis" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Sherwanis"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!-- Route to Fetch Data for a NewIn Men Jackets -->
+       <route url="/V1/solr/jackets" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Jackets"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+
+    <!-- Route to Fetch Data for a NewIn Men MenAccessories -->
+       <route url="/V1/solr/menaccessories" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_MenAccessories"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!-- Route to Fetch Data for a NewIn Men Kurtas -->
+       <route url="/V1/solr/kurtas" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Kurtas"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+   <!-- Route to Fetch Data for a NewIn Men Shirts -->
+       <route url="/V1/solr/shirts" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Shirts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+  <!-- Route to Fetch Data for a NewIn Men Bandis -->
+       <route url="/V1/solr/bandis" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Bandis"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+ <!-- Route to Fetch Data for a NewIn Men Trousers -->
+       <route url="/V1/solr/trousers" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInMen_Trousers"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+
+        <!-- ///////////*Jewellery*///////// -->
+
+     <!-- Route to Fetch Data for a NewIn Jewellery Earrings -->
+       <route url="/V1/solr/earrings" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_Earrings"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>    
+
+     <!-- Route to Fetch Data for a NewIn Jewellery BanglesBracelets() -->
+       <route url="/V1/solr/bangles" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_BanglesBracelets"/>
+        <resources>
+            <resource ref="anonymous"/>
+       </resources>
+  
+    </route>   
+
+
+      <!-- Route to Fetch Data for a NewIn Jewellery FineJewelry -->
+       <route url="/V1/solr/finejewelry" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_FineJewelry"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+      <!-- Route to Fetch Data for a NewIn Jewellery HandHarness -->
+       <route url="/V1/solr/handharness" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_HandHarness"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+      <!-- Route to Fetch Data for a NewIn Jewellery Rings-->
+       <route url="/V1/solr/rings" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_Rings"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+     <!-- Route to Fetch Data for a NewIn Jewellery Foot Harness-->
+       <route url="/V1/solr/footharness" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_FootHarness"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+
+     <!-- Route to Fetch Data for a NewIn Jewellery Foot Brooches-->
+       <route url="/V1/solr/brooches" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_Brooches"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+     <!-- Route to Fetch Data for a NewIn Jewellery Gift Boxes-->
+       <route url="/V1/solr/giftboxes" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInJewellery_GiftBoxes"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+        <!-- ///////////*Newin Kidwear*///////// -->
+
+    <!-- Route to Fetch Data for a NewIn Kidswear -->
+       <route url="/V1/solr/kurtasetsforboys" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_KurtaSetsforBoys"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+   <!-- Route to Fetch Data for a NewIn Kidswear Sharara-->
+       <route url="/V1/solr/shararas" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Shararas"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+  <!-- Route to Fetch Data for a NewIn Kidswear Dresses-->
+       <route url="/V1/solr/dresses" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Dresses"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+        
+  <!-- Route to Fetch Data for a NewIn Kidswear Shirts-->
+       <route url="/V1/solr/kidsaccessories" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_KidsAccessories"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+      <!-- Route to Fetch Data for a NewIn Kidswear Shirts-->
+       <route url="/V1/solr/shirts" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Shirts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+   <!-- Route to Fetch Data for a NewIn Kidswear Jackets-->
+       <route url="/V1/solr/jackets" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Jackets"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+  <!-- Route to Fetch Data for a NewIn Kidswear Co-ord set-->
+       <route url="/V1/solr/coordset" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Coordset"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Gowns-->
+       <route url="/V1/solr/gowns" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Gowns"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Jumpsuit-->
+       <route url="/V1/solr/jumpsuit" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Jumpsuit"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Sherwanis-->
+       <route url="/V1/solr/sherwanis" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Sherwanis"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Pants-->
+       <route url="/V1/solr/pants" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Pants"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Bags-->
+       <route url="/V1/solr/bags" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Bags"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+      
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Tops-->
+       <route url="/V1/solr/tops" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Tops"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Skirts-->
+       <route url="/V1/solr/newin-kidswear-skirts" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Skirts"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Kidswear Sarees-->
+       <route url="/V1/solr/sarees" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInKidswear_Sarees"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Theme Contemprory-->
+       <route url="/V1/solr/contemporary" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInTheme_Contemporary"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+ <!-- Route to Fetch Data for a NewIn Theme Ethnic-->
+       <route url="/V1/solr/ethnic" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInTheme_Ethnic"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route> 
+
+
+
+        <!-- ///////////*Newin Gender*///////// -->
+
+ <!-- Route to Fetch Data for a NewIn Gender Men-->
+       <route url="/V1/solr/men" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInGender_Men"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>      
+
+ <!-- Route to Fetch Data for a NewIn Gender Women-->
+       <route url="/V1/solr/women" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInGender_Women"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>      
+
+
+ <!-- Route to Fetch Data for a NewIn Color-->
+       <route url="/V1/solr/color" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="geNewInColor"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+<route url="/V1/solr/black" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Black"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+    
+</route>
+
+<route url="/V1/solr/red" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Red"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/blue" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Blue"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/green" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Green"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/yellow" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Yellow"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/white" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_White"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/pink" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Pink"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/grey" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Grey"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/brown" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInColor_Brown"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <!-- Route to Fetch Data for a NewIn Size-->
+
+ <route url="/V1/solr/xxsmall" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_XXSmall"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+ <route url="/V1/solr/xsmall" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_XSmall"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/small" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_Small"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/medium" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_Medium"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+
+ <route url="/V1/solr/large" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_Large"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/xlarge" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_XLarge"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/xxlarge" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_XXLarge"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/4xlarge" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_4XLarge"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/5xlarge" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_5XLarge"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/custommade" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_CustomMade"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/freesize" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_FreeSize"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+
+ <route url="/V1/solr/eurosize32" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize32"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize33" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize33"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize34" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize34"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize35" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize35"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize36" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize36"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize37" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize37"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize38" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize38"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize39" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize39"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize40" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize40"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize41" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize41"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+ <route url="/V1/solr/eurosize42" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize42"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize43" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize43"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize44" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize44"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize45" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize45"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize46" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize46"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize47" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize47"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <route url="/V1/solr/eurosize48" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize48"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+ <route url="/V1/solr/eurosize49" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_EuroSize49"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+ <route url="/V1/solr/banglesize22" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_BangleSize22"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/banglesize24" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_BangleSize24"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/banglesize26" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_BangleSize26"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+<route url="/V1/solr/banglesize28" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_BangleSize28"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+<route url="/V1/solr/6_12months" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_6_12Months"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/1_2years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_1_2Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/2_3years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_2_3Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/3_4years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_3_4Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/4_5years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_4_5Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/5_6years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_5_6Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/6_7years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_6_7Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/7_8years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_7_8Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/8_9years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_8_9Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/9_10years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_9_10Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/10_11years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_10_11Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/11_12years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_11_12Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/12_13years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_12_13Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/13_14years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_13_14Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/14_15years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_14_15Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/15_16years" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInSize_15_16Years"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+ <!--/////////////////*NEWIN Delivery*/////////////////////////-->
+<route url="/V1/solr/immediate" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_Immediate"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/1_2weeks" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_1_2Weeks"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/2_4weeks" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_2_4Weeks"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/4_6weeks" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_4_6Weeks"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+
+
+<route url="/V1/solr/6_8weeks" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_6_8Weeks"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<route url="/V1/solr/8weeks" method="GET">
+    <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInDelivery_8Weeks"/>
+    <resources>
+        <resource ref="anonymous"/>
+    </resources>
+</route>
+
+<!-- Route to Fetch Data by Theme -->
+
+
+    <route url="/V1/solr/products" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getThemeData"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+        <parameters>
+            <parameter name="themes" type="string" in="query" required="true"/>
+            <parameter name="categoryId" type="string" in="query" required="true"/>
+        </parameters>
+    </route>
+
+
+
+</routes>

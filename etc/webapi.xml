@@ -1,40 +1,134 @@
 <?xml version="1.0"?>
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi/etc/webapi.xsd">
-    <route url="/V1/solr/products" method="GET">
-        <service class="Aashni\MobileApi\Api\SolrInterface" method="getSolrData"/>
+    xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi/etc/webapi.xsd">
+
+    <route url="/V1/solr/megamenu" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getMegamenuItems" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
         </resources>
     </route>
 
 
-   <!-- Route to Fetch Data for a Specific Designer -->
-    <route url="/V1/solr/designer" method="GET">
-        <service class="Aashni\MobileApi\Api\SolrInterface" method="getDesignerData"/>
+    <route url="/V1/solr/category-by-url-key/:urlKey" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getCategoryByUrlKey" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/search" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getSolrSearch" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/designers" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getDesigners" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/designer" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getDesignerData" />
+        <resources>
+            <resource ref="anonymous" />
         </resources>
         <parameters>
-            <parameter name="designer_name" type="string" in="query" required="true"/>
+            <parameter name="designer_name" type="string" in="query" required="true" />
         </parameters>
     </route>
 
 
-  <!-- Route to Fetch Data for a NewInWomensclothe -->
-   <route url="/V1/solr/newin" method="GET">
-        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInData"/>
+    <route url="/V1/solr/guest-cart/item/updateQty" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="updateGuestCartItemQty" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
         </resources>
     </route>
-    
 
-      <!-- Route to Fetch Data for a NewInAccessories -->
-   <route url="/V1/solr/new-in-accessories" method="GET">
-        <service class="Aashni\MobileApi\Api\SolrInterface" method="getNewInAccessories"/>
+
+    <route url="/V1/guest-carts/delete-item" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="deleteGuestItem" />
         <resources>
-            <resource ref="anonymous"/>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/child-categories/:parentCategoryName" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getChildCategories" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/category/:categoryId/filters" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getFilters" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/aashni/place-order" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="placeOrderForCustomer" />
+        <resources>
+            <resource ref="self" />
+        </resources>
+        <data>
+            <parameter type="string" name="paymentMethodCode" />
+            <parameter type="mixed" name="billingAddress" />
+
+
+            <parameter type="string" name="paymentMethodNonce" />
+
+        </data>
+    </route>
+
+
+    <route url="/V1/aashni/order-details/:orderId" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getOrderDetails" />
+        <resources>
+
+            <resource ref="self" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/cart/details/:customerId" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getCartDetailsByCustomerId" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/cart/item/delete" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="deleteCartItem" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+    <route url="/V1/solr/country-codes" method="GET">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="getAllCountryCodes" />
+        <resources>
+            <resource ref="anonymous" />
+        </resources>
+    </route>
+
+
+    <route url="/V1/solr/cart/item/updateQty" method="POST">
+        <service class="Aashni\MobileApi\Api\SolrInterface" method="updateCartItemQty" />
+        <resources>
+            <resource ref="anonymous" />
         </resources>
     </route>
 
